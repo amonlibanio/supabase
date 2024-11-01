@@ -413,7 +413,7 @@ services:
 
   vector:
     # container_name: supabase-vector
-    image: timberio/vector:nightly-alpine
+    image: timberio/vector:latest-alpine
     healthcheck:
       test:
         [
