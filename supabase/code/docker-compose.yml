@@ -8,7 +8,7 @@ name: supabase
 
 services:
   studio:
-    image: supabase/studio:20241202-71e5240
+    image: supabase/studio:latest
     restart: unless-stopped
     healthcheck:
       test:
@@ -48,7 +48,7 @@ services:
       # NEXT_ANALYTICS_BACKEND_PROVIDER: bigquery
 
   kong:
-    image: kong:2.8.1
+    image: kong:2.8.5-alpine
     restart: unless-stopped
     # https://unix.stackexchange.com/a/294837
     entrypoint: bash -c 'eval "echo \"$$(cat ~/temp.yml)\"" > ~/kong.yml &&
@@ -73,7 +73,7 @@ services:
       - ./volumes/api/kong.yml:/home/kong/temp.yml:ro
 
   auth:
-    image: supabase/gotrue:v2.164.0
+    image: supabase/gotrue:v2.165.1
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -152,14 +152,10 @@ services:
 
       # GOTRUE_HOOK_SEND_EMAIL_ENABLED: "false"
       # GOTRUE_HOOK_SEND_EMAIL_URI: "http://host.docker.internal:54321/functions/v1/email_sender"
-      # GOTRUE_HOOK_SEND_EMAIL_SECRETS: "v1,whsec_VGhpcyBpcyBhbiBleGFtcGxlIG9mIGEgc2hvcnRlciBCYXNlNjQgc3RyaW5n"
-
-
-
-
+      # GOTRUE_HOOK_SEND_EMAIL_SECRETS: "v1,whsec_VGhpcyBpcyBhbiBleGFtcGxlIG9mIGEgc2hvcnRlciBCYXNlNjQgc3RyaW5n
 
   rest:
-    image: postgrest/postgrest:v12.2.0
+    image: postgrest/postgrest:latest
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -179,7 +175,7 @@ services:
 
   realtime:
     # This container name looks inconsistent but is correct because realtime constructs tenant id by parsing the subdomain
-    image: supabase/realtime:v2.33.58
+    image: supabase/realtime:latest
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -222,7 +218,7 @@ services:
 
   # To use S3 backed storage: docker compose -f docker-compose.yml -f docker-compose.s3.yml up
   storage:
-    image: supabase/storage-api:v1.11.13
+    image: supabase/storage-api:latest
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -264,7 +260,7 @@ services:
       - ./volumes/storage:/var/lib/storage:z
 
   imgproxy:
-    image: darthsim/imgproxy:v3.8.0
+    image: darthsim/imgproxy:latest
     healthcheck:
       test: [ "CMD", "imgproxy", "health" ]
       timeout: 5s
@@ -279,7 +275,7 @@ services:
       - ./volumes/storage:/var/lib/storage:z
 
   meta:
-    image: supabase/postgres-meta:v0.84.2
+    image: supabase/postgres-meta:v0.85.0
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -296,7 +292,7 @@ services:
       PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
 
   functions:
-    image: supabase/edge-runtime:v1.65.3
+    image: supabase/edge-runtime:v1.65.4
     restart: unless-stopped
     depends_on:
       analytics:
@@ -317,7 +313,7 @@ services:
       - /home/deno/functions/main
 
   analytics:
-    image: supabase/logflare:1.4.0
+    image: supabase/logflare:latest
     healthcheck:
       test: [ "CMD", "curl", "http://localhost:4000/health" ]
       timeout: 5s
@@ -357,7 +353,7 @@ services:
 
   # Comment out everything below this point if you are using an external Postgres database
   db:
-    image: supabase/postgres:15.6.1.139
+    image: supabase/postgres:15.6.1.145
     healthcheck:
       test: pg_isready -U postgres -h localhost
       interval: 5s
@@ -403,7 +399,7 @@ services:
       - db-config:/etc/postgresql-custom
 
   vector:
-    image: timberio/vector:0.28.1-alpine
+    image: timberio/vector:0.28.2-alpine
     healthcheck:
       test:
         [
@@ -427,7 +423,7 @@ services:
 
   # Update the DATABASE_URL if you are using an external Postgres database
   supavisor:
-    image: supabase/supavisor:1.1.56
+    image: supabase/supavisor:1.1.67
     healthcheck:
       test: curl -sSfL --head -o /dev/null "http://127.0.0.1:4000/api/health"
       interval: 10s
